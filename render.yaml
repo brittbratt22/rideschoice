@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: ridechoice
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: flask --app app init-db && gunicorn --bind 0.0.0.0:$PORT --workers 2 app:app
+    healthCheckPath: /healthz
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: "1"
+      - key: ENABLE_BOOKINGS
+        value: "1"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ridechoice-db
+          property: connectionString
+
+databases:
+  - name: ridechoice-db
+    plan: free
+    databaseName: ridechoice
+    user: ridechoice
