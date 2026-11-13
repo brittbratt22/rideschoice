@@ -30,6 +30,7 @@ if DB_URL.startswith('postgres://'):
 IS_PG = DB_URL.startswith('postgresql://')
 DB_PATH = os.environ.get('DATABASE_PATH', 'ridechoice.sqlite3')
 LIVE = os.environ.get('ENABLE_BOOKINGS', '0') == '1'
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', '').strip().lower()
 
 
 class DBWrapper:
@@ -260,18 +261,22 @@ def register():
         or role not in ('driver', 'passenger') or (role == 'driver' and not vehicle)
     ):
         return jsonify(error='Supply name, email, a 12-256 character password, and vehicle details for drivers.'), 400
+    approved = 0
+    if ADMIN_EMAIL and email == ADMIN_EMAIL:
+        role = 'admin'
+        approved = 1
     integrity_errors = (sqlite3.IntegrityError,) + ((psycopg.IntegrityError,) if psycopg else ())
     try:
         if IS_PG:
             row = db().execute(
-                'INSERT INTO users(name,email,password,role,vehicle) VALUES(?,?,?,?,?) RETURNING id',
-                (name, email, generate_password_hash(password), role, vehicle)
+                'INSERT INTO users(name,email,password,role,vehicle,approved) VALUES(?,?,?,?,?,?) RETURNING id',
+                (name, email, generate_password_hash(password), role, vehicle, approved)
             ).fetchone()
             uid = row['id']
         else:
             c = db().execute(
-                'INSERT INTO users(name,email,password,role,vehicle) VALUES(?,?,?,?,?)',
-                (name, email, generate_password_hash(password), role, vehicle)
+                'INSERT INTO users(name,email,password,role,vehicle,approved) VALUES(?,?,?,?,?,?)',
+                (name, email, generate_password_hash(password), role, vehicle, approved)
             )
             uid = c.lastrowid
         db().commit()
@@ -288,7 +293,3 @@ def register():
 @app.post('/api/login')
 def login():
     d = data()
-    email = text(d, 'email', 254).lower()
-    password = str(d.get('password', ''))
-    if len(password) > 256:
-        return jsonify(error='Invalid email or password.'), 401
