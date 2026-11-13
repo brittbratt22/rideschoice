@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RideChoice">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/static/icon.svg">
+  <link rel="apple-touch-icon" href="/static/icon.svg">
+  <title>RideChoice</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container flex-between">
+      <div class="btn-group">
+        <h1>RideChoice</h1>
+        <span id="live-dot" class="live-pill hidden" title="Auto-updating every 5s">LIVE</span>
+      </div>
+      <div class="btn-group">
+        <button id="btn-notify" class="btn-secondary hidden">Enable Alerts</button>
+        <button id="btn-install" class="btn-primary hidden">Install App</button>
+        <div id="nav-user" class="hidden">
+          <span id="user-badge"></span>
+          <button id="btn-logout" class="btn-secondary">Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="alert-box" class="alert hidden"></div>
+    <div id="booking-banner" class="banner hidden">
+      Bookings are currently paused by the operator.
+    </div>
+
+    <section id="auth-section" class="grid-2 hidden">
+      <div class="card">
+        <h2>Sign In</h2>
+        <form id="login-form">
+          <label>Email <input type="email" id="login-email" required></label>
+          <label>Password <input type="password" id="login-password" required></label>
+          <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Create Account</h2>
+        <form id="register-form">
+          <label>Full Name <input type="text" id="reg-name" maxlength="80" required></label>
+          <label>Email <input type="email" id="reg-email" maxlength="254" required></label>
+          <label>Password (min 12 chars) <input type="password" id="reg-password" minlength="12" maxlength="256" required></label>
+          <label>Account Type
+            <select id="reg-role">
+              <option value="passenger">Passenger</option>
+              <option value="driver">Driver</option>
+            </select>
+          </label>
+          <label id="vehicle-field" class="hidden">Vehicle Make, Model & Plate
+            <input type="text" id="reg-vehicle" maxlength="120" placeholder="e.g., Silver Toyota Prius - ABC123">
+          </label>
+          <button type="submit" class="btn-primary">Register</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="passenger-section" class="hidden">
+      <div class="card">
+        <h2>Request a Ride</h2>
+        <form id="book-form" class="grid-3">
+          <label>Pickup Address <input type="text" id="book-pickup" maxlength="200" required></label>
+          <label>Destination <input type="text" id="book-dest" maxlength="200" required></label>
+          <label>Select Available Driver
+            <select id="book-driver" required>
+              <option value="">Loading drivers...</option>
+            </select>
+          </label>
+          <div class="full-span">
+            <button type="submit" id="btn-book" class="btn-primary">Book Ride</button>
+            <button type="button" id="btn-refresh-drivers" class="btn-secondary">Refresh Drivers</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="driver-section" class="hidden">
+      <div class="card flex-between">
+        <div>
+          <h2>Driver Status</h2>
+          <p id="driver-approval-msg" class="muted"></p>
+        </div>
+        <div>
+          <button id="btn-toggle-avail" class="btn-primary">Go Online</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-section" class="hidden">
+      <div class="card">
+        <div class="flex-between">
+          <h2>Driver Approvals</h2>
+          <button id="btn-refresh-admin" class="btn-secondary">Refresh</button>
+        </div>
+        <div id="admin-drivers-list" class="list-group"></div>
+      </div>
+    </section>
+
+    <section id="rides-section" class="hidden">
+      <div class="card">
+        <div class="flex-between">
+          <h2>Rides</h2>
+          <button id="btn-refresh-rides" class="btn-secondary">Refresh Rides</button>
+        </div>
+        <div id="rides-list" class="list-group"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
